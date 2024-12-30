@@ -1,0 +1,16 @@
+{
+   "greeting" : "Wellcome to Farm",
+   "login" : "Login",
+   "changpw" : "Change your password",
+   "requireChangepw" : "Your new password must be different to your previously used passwords and 8 characters.",
+   "strNotEmpty" : "Not empty",
+   "email" : "Email",
+   "hintEmail" : "Please enter email",
+   "pw" : "Password",
+   "hintPW" : "Please enter password",
+   "inValidEmail" : "Invalid email. Please enter email again!",
+   "controll": "Controll",
+    "workSchedule" : "Work Schedule",
+    "priveList": "Price List",
+    "wellcomeBack" : "Wellcome Back"
+}
