@@ -1,0 +1,16 @@
+{
+    "greeting" : "Wellcome to Farm",
+    "login" : "Đăng nhập",
+    "changpw" : "Đổi mật khẩu của bạn",
+    "requireChangepw" : "Mật khẩu mới của bạn phải khác với các mật khẩu đã sử dụng trước đó và có ít nhất 8 ký tự.",
+    "strNotEmpty" : "Không được để trống",
+    "email" : "Email",
+    "hintEmail" : "Vui lòng nhập email",
+    "pw" : "Mật khẩu",
+    "hintPW" : "Vui lòng nhập mật khẩu",
+    "inValidEmail" : "Email không hợp lệ. Vui lòng nhập lại email!",
+    "controll": "Điều khiển",
+    "workSchedule" : "Lịch làm việc",
+    "priveList": "Bảng giá",
+    "wellcomeBack" : "Xin chào"
+}
