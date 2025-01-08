@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -16,7 +17,8 @@ class ApiProviderImp extends ApiProvider {
             receiveTimeout: const Duration(seconds: 60),
           ),
         ) {
-    _dio.interceptors.add(PrettyDioLogger());
+    _dio.interceptors
+        .add(PrettyDioLogger(responseBody: true, requestHeader: false, error: true, request: false));
   }
 
   @override
@@ -28,26 +30,29 @@ class ApiProviderImp extends ApiProvider {
     } on TimeoutException {
       throw ECException("Request timeout");
     } catch (e) {
-      throw ECException("Unexpected error: $e");
+      throw ECException(e.toString());
     }
   }
 
   @override
-  Future<dynamic> getHasHeader(String url, dynamic header) async {
+  Future<dynamic> getHasOption(String url, Options option) async {
     try {
       return await _dio
-          .get(url, options: Options(headers: header))
-          .then((value) => _processResponse(value)).onError((error, stackTrace) {
-        if (error is DioException && error.response != null) {
-          throw ECException('${error.response?.data['exc']}');
-        }
-          },);
+          .get(url, options: option)
+          .then((value) => option.responseType == ResponseType.bytes ? value.data : _processResponse(value))
+          .onError(
+        (error, stackTrace) {
+          if (error is DioException && error.response != null) {
+            throw ECException('${error.response?.data['exc']}');
+          }
+        },
+      );
     } on SocketException {
       throw ECException("No internet connection");
     } on TimeoutException {
       throw ECException("Request timeout");
     } catch (e) {
-      throw ECException("Unexpected error: $e");
+      throw ECException(e.toString());
     }
   }
 
@@ -67,10 +72,9 @@ class ApiProviderImp extends ApiProvider {
     } on TimeoutException {
       throw ECException("Request timeout");
     } catch (e) {
-      throw ECException("Unexpected error: $e");
+      throw ECException(e.toString());
     }
   }
-
 
   @override
   Future<dynamic> postMultipart(String url, file, field) async {
@@ -87,12 +91,12 @@ class ApiProviderImp extends ApiProvider {
     } on TimeoutException {
       throw ECException("Request timeout");
     } catch (e) {
-      throw ECException("Unexpected error: $e");
+      throw ECException(e.toString());
     }
   }
 
   dynamic _processResponse(Response response) {
-    final responseJson = response.data;
+    var responseJson = response.data;
     final statusCode = response.statusCode ?? 500;
 
     // Map for status codes
@@ -104,7 +108,9 @@ class ApiProviderImp extends ApiProvider {
       418: 418,
       500: 500,
     };
-
+    if(responseJson is! Map){
+      responseJson = {'data': response.data};
+    }
     responseJson['HttpStatusCode'] = statusCodeMap[statusCode] ?? 500;
 
     if (statusCode >= 200 && statusCode < 300) {

@@ -9,7 +9,9 @@ class TimePickerTextField  extends StatefulWidget {
     this.compulsory = false,
     required this.onChangeText,
     required this.controller,
-    this.getDateTimer = false
+    this.getDateTimer = false,
+    this.isInitDateTime = false,
+    this.subtractDay
   });
 
   final String? hintName;
@@ -17,6 +19,8 @@ class TimePickerTextField  extends StatefulWidget {
   final TextEditingController controller;
   final Function(String) onChangeText;
   final bool getDateTimer;
+  final bool isInitDateTime;
+  final Duration? subtractDay;
   @override
   State<TimePickerTextField> createState() =>
       _DateTimePickerTextFieldState();
@@ -75,6 +79,27 @@ class _DateTimePickerTextFieldState extends State<TimePickerTextField> {
     widget.onChangeText(StringUtils.dateAndTimeToMillisecondsSinceEpoch(time, date).toString());
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Move the initialization to post-frame callback
+    if (widget.isInitDateTime) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _initializeDateTime();
+      });
+    }
+  }
+
+  void _initializeDateTime() {
+    final DateTime now = DateTime.now();
+    final date = widget.subtractDay != null ? DateTime(now.year, now.month, now.day).subtract(widget.subtractDay!) : DateTime(now.year, now.month, now.day);
+    final time = TimeOfDay(hour: now.hour, minute: now.minute);
+
+    final formattedDateTime =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} '
+        '${time.format(context)}';
+    widget.controller.text = formattedDateTime;
+  }
   @override
   Widget build(BuildContext context) {
     return Container(

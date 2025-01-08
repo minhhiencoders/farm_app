@@ -1,28 +1,37 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:smart_farm_application/components/loading_widget.dart';
 import 'package:smart_farm_application/model/area.dart';
 import 'package:smart_farm_application/utilities/size_utils.dart';
+import 'package:smart_farm_application/view_models/report_view_model.dart';
+import '../configs/contants.dart';
+import '../model/information.dart';
 import '../page/home/extend/item_control_screen.dart';
+import '../utilities/hive_utils.dart';
 
-class MapAreasWidget extends StatefulWidget {
+class MapAreasWidget extends ConsumerStatefulWidget {
   const MapAreasWidget({
     super.key,
- required this.listArea,  this.isReport = false,
+    required this.listArea,
+    this.isReport = false,
   });
 
   final List<Area> listArea;
   final bool isReport;
   @override
-  State createState() => _MapAreasWidgetState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _MapAreasWidgetState();
 }
 
-class _MapAreasWidgetState extends State<MapAreasWidget> {
+class _MapAreasWidgetState extends ConsumerState<MapAreasWidget> {
   MapboxMap? mapboxMap;
   PolygonAnnotationManager? polygonAnnotationManager;
   PointAnnotationManager? pointAnnotationManager;
   List<PolygonAnnotation?> _polygonAnnotations = [];
   PolygonAnnotation? _selectedPolygon;
-
   @override
   void initState() {
     super.initState();
@@ -42,7 +51,6 @@ class _MapAreasWidgetState extends State<MapAreasWidget> {
         marginRight: 30,
       ),
     );
-
   }
 
   void _flyToAnnotation(Position position) {
@@ -58,7 +66,8 @@ class _MapAreasWidgetState extends State<MapAreasWidget> {
   }
 
   void _setupPolygonAnnotations() async {
-    polygonAnnotationManager = await mapboxMap?.annotations.createPolygonAnnotationManager();
+    polygonAnnotationManager =
+        await mapboxMap?.annotations.createPolygonAnnotationManager();
 
     if (polygonAnnotationManager == null) return;
 
@@ -71,29 +80,36 @@ class _MapAreasWidgetState extends State<MapAreasWidget> {
       );
     }).toList();
 
-    await polygonAnnotationManager?.createMulti(options).then((value) => _polygonAnnotations = value);
+    await polygonAnnotationManager
+        ?.createMulti(options)
+        .then((value) => _polygonAnnotations = value);
 
     polygonAnnotationManager?.addOnPolygonAnnotationClickListener(
       AnnotationClickListener(
         onAnnotationClick: (annotation) {
-          if(_selectedPolygon != null){
+          if (_selectedPolygon != null) {
             _selectedPolygon?.fillColor = Colors.white.withOpacity(0.5).value;
             _selectedPolygon?.fillOutlineColor = Colors.white.value;
             polygonAnnotationManager?.update(_selectedPolygon!);
           }
-          int index = _polygonAnnotations.indexWhere((element) => element!.id.contains(annotation.id),);
+          int index = _polygonAnnotations.indexWhere(
+            (element) => element!.id.contains(annotation.id),
+          );
           annotation.fillColor = Colors.green.withOpacity(0.8).value;
           polygonAnnotationManager?.update(annotation);
           _selectedPolygon = annotation;
           _flyToAnnotation(annotation.geometry.coordinates.first.first);
-          widget.isReport ? _showBottomBoxReport() : _showBottomBoxControl(widget.listArea.elementAt(index));
+          widget.isReport
+              ? _showBottomBoxReport(widget.listArea.elementAt(index))
+              : _showBottomBoxControl(widget.listArea.elementAt(index));
         },
       ),
     );
   }
 
   void _setupPointAnnotations() async {
-    pointAnnotationManager = await mapboxMap?.annotations.createPointAnnotationManager();
+    pointAnnotationManager =
+        await mapboxMap?.annotations.createPointAnnotationManager();
 
     if (pointAnnotationManager == null) return;
 
@@ -112,24 +128,29 @@ class _MapAreasWidgetState extends State<MapAreasWidget> {
       PointAnnotationClickListener(
         onAnnotationClick: (annotation) {
           _flyToAnnotation(annotation.geometry.coordinates);
-          int index = widget.listArea.indexWhere((element) => element.nameSector.contains(annotation.textField!),);
+          int index = widget.listArea.indexWhere(
+            (element) => element.nameSector.contains(annotation.textField!),
+          );
           if (index != -1) {
-            if(_selectedPolygon != null){
+            if (_selectedPolygon != null) {
               _selectedPolygon?.fillColor = Colors.white.withOpacity(0.5).value;
               _selectedPolygon?.fillOutlineColor = Colors.white.value;
               polygonAnnotationManager?.update(_selectedPolygon!);
             }
-            _polygonAnnotations.elementAt(index)?.fillColor = Colors.green.withOpacity(0.8).value;
-            polygonAnnotationManager?.update(_polygonAnnotations.elementAt(index)!);
+            _polygonAnnotations.elementAt(index)?.fillColor =
+                Colors.green.withOpacity(0.8).value;
+            polygonAnnotationManager
+                ?.update(_polygonAnnotations.elementAt(index)!);
             _selectedPolygon = _polygonAnnotations.elementAt(index);
           }
 
-          widget.isReport ? _showBottomBoxReport() : _showBottomBoxControl(widget.listArea.elementAt(index));
+          widget.isReport
+              ? _showBottomBoxReport(widget.listArea.elementAt(index))
+              : _showBottomBoxControl(widget.listArea.elementAt(index));
         },
       ),
     );
   }
-
 
   void _showBottomBoxControl(Area? area) {
     showModalBottomSheet(
@@ -137,42 +158,81 @@ class _MapAreasWidgetState extends State<MapAreasWidget> {
       backgroundColor: Colors.white,
       isScrollControlled: true,
       showDragHandle: true,
-      constraints: BoxConstraints(maxHeight: SizeUtils(context).sizeHeight * 0.8),
+      constraints:
+          BoxConstraints(maxHeight: SizeUtils(context).sizeHeight * 0.8),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
       builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+        return ScaffoldMessenger(
+          child: Builder(
+            builder: (context) => Scaffold(
+              backgroundColor: Colors.white,
+              body: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: ItemControlScreenScreen(area: area!, isShowIrrigation: false),
+              ),
+            ),
           ),
-          child: ItemControlScreenScreen(area: area!, isShowIrrigation: false),
         );
       },
     );
   }
 
-  void _showBottomBoxReport(){
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      isScrollControlled: true,
-      showDragHandle: true,
-      constraints: BoxConstraints(maxHeight: SizeUtils(context).sizeHeight * 0.8, minHeight: SizeUtils(context).sizeHeight * 0.5, minWidth: SizeUtils(context).sizeWidth),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Container(child: Text('Hello'),),
-        );
+  void _showBottomBoxReport(Area area) {
+    _getImages(area.sectorId.toString());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.white,
+        isScrollControlled: true,
+        showDragHandle: true,
+        constraints: BoxConstraints(
+            maxHeight: SizeUtils(context).sizeHeight * 0.8,
+            minHeight: SizeUtils(context).sizeHeight * 0.5,
+            minWidth: SizeUtils(context).sizeWidth),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        ),
+        builder: (BuildContext context) {
+          return Consumer(
+            builder: (context, ref, child) {
+              final reportState = ref.watch(reportProvider);
+
+              if (reportState.isLoading) {
+                return const Center(child: LoadingWidget());
+              }
+
+              if (reportState.value.isNotEmpty) {
+                return Image.memory(
+                  Uint8List.fromList(reportState.value),
+                  fit: BoxFit.contain,
+                );
+              }
+
+              return const Center(child: Text('No image available'));
+            },
+          );
+        },
+      );
+    });
+  }
+
+  Future<void> _getImages(String sectorId) async {
+    await HiveUtils.getValue<Information?>(
+            Contant.INFORMATION_LIST, Contant.INFORMATION)
+        .then(
+      (value) {
+        if (value != null) {
+          ref
+              .read(reportProvider.notifier)
+              .getImagesReport(value.authToken.toString(), sectorId);
+        }
       },
     );
   }
-
 
   @override
   void didUpdateWidget(covariant MapAreasWidget oldWidget) {
@@ -188,15 +248,16 @@ class _MapAreasWidgetState extends State<MapAreasWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
         onPressed: () {
-          _flyToAnnotation(Position(106.90417, 11.621546));
+          _flyToAnnotation(widget.listArea.first.center);
         },
         child: const Icon(Icons.my_location),
       ),
       body: MapWidget(
         key: const ValueKey("mapWidget"),
         cameraOptions: CameraOptions(
-          center: Point(coordinates: Position(108.26842, 12.691489)),
+          center: Point(coordinates: widget.listArea.first.center),
           zoom: 15.0,
         ),
         styleUri: MapboxStyles.SATELLITE_STREETS,

@@ -348,7 +348,7 @@ class SensorDevice extends Equatable {
       frmeta: json["frmeta"] == null
           ? []
           : List<Frmeta>.from(json["frmeta"]!.map((x) => Frmeta.fromJson(x))),
-      frtrans: json["frtrans"] == null
+      frtrans: json["frtrans"] == null || json is! List<List<double>>
           ? []
           : List<List<double>>.from(json["frtrans"]!.map(
               (x) => x == null

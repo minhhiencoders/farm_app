@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farm_application/page/home/compare_screen.dart';
 import 'package:smart_farm_application/services/auth_services.dart';
 
 import '../page/home/navigation_screen.dart';
@@ -31,6 +32,7 @@ class AppRouter {
   static const String navigation = '/navigation';
   static const String home = '/home';
   static const String product = '/product';
+  static const String compare = '/compare';
 
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
@@ -41,13 +43,15 @@ class AppRouter {
         return CustomPageRoute(child: const AuthWidget());
       case navigation:
         return CustomPageRoute(child: const NavigationScreen());
-      // default:
-      //   // if (settings.name?.startsWith('$product/') ?? false) {
-      //   //   final productId = settings.name!.split('/')[2];
-      //   //   return CustomPageRoute(child: ProductScreen(productId: productId));
-      //   // }
-      //   // return CustomPageRoute(child: NotFoundScreen());
-      //   return CustomPageRoute(child: const AuthWidget());
+      case compare:
+        return CustomPageRoute(child: const CompareScreen());
+      default:
+        // if (settings.name?.startsWith('$product/') ?? false) {
+        //   final productId = settings.name!.split('/')[2];
+        //   return CustomPageRoute(child: ProductScreen(productId: productId));
+        // }
+        // return CustomPageRoute(child: NotFoundScreen());
+        return CustomPageRoute(child: const AuthWidget());
     }
   }
 

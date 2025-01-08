@@ -103,7 +103,7 @@ class _SensorStationScreenState extends ConsumerState<SensorStationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final sensors = ref.watch(clientInforProvider).value?.sensorDevices;
+    final sensors = ref.watch(clientInfoProvider).value?.sensorDevices;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {

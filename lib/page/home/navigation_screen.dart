@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:smart_farm_application/components/splash_widget.dart';
 import 'package:smart_farm_application/components/switch_page.dart';
 import 'package:smart_farm_application/components/circle_button_widget.dart';
 import 'package:smart_farm_application/model/drawer_item.dart';
@@ -13,7 +12,6 @@ import 'package:smart_farm_application/view_models/auth_view_model.dart';
 import '../../configs/contants.dart';
 import '../../utilities/hive_utils.dart';
 import '../../view_models/client_infor_view_model.dart';
-import 'control_screen.dart';
 
 class NavigationScreen extends ConsumerStatefulWidget {
   const NavigationScreen({super.key});
@@ -43,18 +41,17 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
   void initState() {
     super.initState();
     _initializeAnimations();
-    _getClientInfor();
+    _getClientInfo();
   }
 
-  Future<void> _getClientInfor() async{
+  Future<void> _getClientInfo() async {
     await HiveUtils.getValue<Information?>(
-        Contant.INFORMATION_LIST, Contant.INFORMATION)
+            Contant.INFORMATION_LIST, Contant.INFORMATION)
         .then(
-          (value) {
+      (value) {
         if (value != null) {
-          ref
-              .read(clientInforProvider.notifier)
-              .getClientInfor(value.authToken.toString(), value.clients.first.id ?? 1);
+          ref.read(clientInfoProvider.notifier).getClientInfo(
+              value.authToken.toString(), value.clients.first.id ?? 1);
         }
       },
     );

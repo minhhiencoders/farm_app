@@ -56,8 +56,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   Widget build(BuildContext context) {
     final size = SizeUtils(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         top: false,
+        maintainBottomViewPadding: true,
         child: SingleChildScrollView(
           controller: _scrollController,
           physics: const BouncingScrollPhysics(),

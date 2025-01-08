@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_farm_application/model/daily_timer.dart';
+import 'package:smart_farm_application/view_models/control_view_model.dart';
 import '../../../components/input_widget.dart';
 import '../../../components/timePickerTextField_component.dart';
+import '../../../configs/contants.dart';
 import '../../../model/area.dart';
+import '../../../model/information.dart';
+import '../../../utilities/dialog_utils.dart';
+import '../../../utilities/hive_utils.dart';
+import '../../../utilities/scaffold_messenger_utils.dart';
 
 class ItemControlScreenScreen extends ConsumerStatefulWidget {
-  const ItemControlScreenScreen({
-    super.key,
-    required this.area,
-    this.isShowIrrigation = true
-  });
+  const ItemControlScreenScreen(
+      {super.key, required this.area, this.isShowIrrigation = true});
   final Area area;
   final bool isShowIrrigation;
 
@@ -41,10 +45,53 @@ class _ItemControlScreenScreenState
   final _b1Controller = TextEditingController();
   final _b2Controller = TextEditingController();
   final _b3Controller = TextEditingController();
+
+  String token = '';
+  int clientId = 1;
+  String _beforeTime = '';
+  List<DailyTimer> listDailyTimer = [];
+  @override
+  void initState() {
+    super.initState();
+    _getInit();
+  }
+
+  _getInit() async{
+    await HiveUtils.getValue<Information?>(
+        Contant.INFORMATION_LIST, Contant.INFORMATION)
+        .then(
+          (value) {
+        if (value != null) {
+          token = value.authToken ?? '';
+          clientId = value.clients.first.id ?? 1;
+        }
+      },
+    );
+  }
+
   @override
   void dispose() {
     super.dispose();
     _handmadeController.dispose();
+    _timerController.dispose();
+    _timerAndDayController.dispose();
+    _minutesController.dispose();
+    _minutesOfDayController.dispose();
+    _temperatureMaxController.dispose();
+    _humidityMinController.dispose();
+    _countMinutesController.dispose();
+    _countAutoMaxController.dispose();
+    _countedAutoToDayController.dispose();
+    _fertilizerController.dispose();
+    _manureController.dispose();
+    _pesticideController.dispose();
+    _kaliController.dispose();
+    _a1Controller.dispose();
+    _a2Controller.dispose();
+    _a3Controller.dispose();
+    _b1Controller.dispose();
+    _b2Controller.dispose();
+    _b3Controller.dispose();
   }
 
   @override
@@ -64,7 +111,7 @@ class _ItemControlScreenScreenState
                 ],
               ),
             ),
-            Text('Tưới thủ công 123'),
+            Text('Tưới thủ công'),
             Row(
               spacing: 10.dg,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -85,118 +132,144 @@ class _ItemControlScreenScreenState
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        ElevatedButton(onPressed: () {}, child: Text('Bật')),
-                        ElevatedButton(onPressed: () {}, child: Text('Tắt')),
+                        ElevatedButton(onPressed: () {
+                          DialogUtils.showLoadingDialog(context, message: 'Loading...');
+                          ref.read(controlProvider.notifier).startSector(token, clientId, (int.parse(_handmadeController.text) * 60).toString()).then((value) {
+                            ScaffoldMessageUtil.showSuccess(context, message: value);
+                          },).onError((error, stackTrace) {
+                            ScaffoldMessageUtil.showError(context, message: error.toString());
+                          },).whenComplete(() => DialogUtils.hideLoadingDialog(context),);
+
+                        }, child: Text('Bật')),
+                        ElevatedButton(onPressed: () {
+                          DialogUtils.showLoadingDialog(context, message: 'Loading...');
+                          ref.read(controlProvider.notifier).stopSector(token, clientId).then((value) {
+                            ScaffoldMessageUtil.showSuccess(context, message: value);
+                          },).onError((error, stackTrace) {
+                            ScaffoldMessageUtil.showError(context, message: error.toString());
+                          },).whenComplete(() => DialogUtils.hideLoadingDialog(context),);
+                        }, child: Text('Tắt')),
                       ],
                     ))
               ],
             ),
-            if(widget.isShowIrrigation)
-              Column(spacing: 10.dm,
-              children: [
-                Row(
-                  spacing: 10.dm,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Text('Phân (kg)'),
-                    ),
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: 'Khối lượng (kg)',
-                      controller: _fertilizerController,
-                    ))
-                  ],
-                ),
-                Row(
-                  spacing: 10.dm,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Text('Đạm (%)'),
-                    ),
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: '%',
-                      controller: _manureController,
-                    ))
-                  ],
-                ),
-                Row(
-                  spacing: 10.dm,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Text('Lân (%)'),
-                    ),
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: '%',
-                      controller: _pesticideController,
-                    ))
-                  ],
-                ),
-                Row(
-                  spacing: 10.dm,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Text('Kali (%)'),
-                    ),
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: '%',
-                      controller: _kaliController,
-                    ))
-                  ],
-                ),
-                Row(
-                  spacing: 10.dm,
-                  children: [
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: 'Tên chất',
-                      controller: _a1Controller,
-                    )),
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: 'Khối lượng (kg)',
-                      controller: _b1Controller,
-                    ))
-                  ],
-                ),
-                Row(
-                  spacing: 10.dm,
-                  children: [
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: 'Tên chất',
-                      controller: _a2Controller,
-                    )),
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: 'Khối lượng (kg)',
-                      controller: _b2Controller,
-                    ))
-                  ],
-                ),
-                Row(
-                  spacing: 10.dm,
-                  children: [
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: 'Tên chất',
-                      controller: _a3Controller,
-                    )),
-                    Expanded(child: InputWidget(
-                      isCenter: true,
-                      hintText: 'Khối lượng (kg)',
-                      controller: _b3Controller,
-                    ))
-                  ],
-                )
-              ],
-            ),
+            if (widget.isShowIrrigation)
+              Column(
+                spacing: 10.dm,
+                children: [
+                  Row(
+                    spacing: 10.dm,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text('Phân (kg)'),
+                      ),
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: 'Khối lượng (kg)',
+                        controller: _fertilizerController,
+                      ))
+                    ],
+                  ),
+                  Row(
+                    spacing: 10.dm,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text('Đạm (%)'),
+                      ),
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: '%',
+                        controller: _manureController,
+                      ))
+                    ],
+                  ),
+                  Row(
+                    spacing: 10.dm,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text('Lân (%)'),
+                      ),
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: '%',
+                        controller: _pesticideController,
+                      ))
+                    ],
+                  ),
+                  Row(
+                    spacing: 10.dm,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Text('Kali (%)'),
+                      ),
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: '%',
+                        controller: _kaliController,
+                      ))
+                    ],
+                  ),
+                  Row(
+                    spacing: 10.dm,
+                    children: [
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: 'Tên chất',
+                        controller: _a1Controller,
+                      )),
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: 'Khối lượng (kg)',
+                        controller: _b1Controller,
+                      ))
+                    ],
+                  ),
+                  Row(
+                    spacing: 10.dm,
+                    children: [
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: 'Tên chất',
+                        controller: _a2Controller,
+                      )),
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: 'Khối lượng (kg)',
+                        controller: _b2Controller,
+                      ))
+                    ],
+                  ),
+                  Row(
+                    spacing: 10.dm,
+                    children: [
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: 'Tên chất',
+                        controller: _a3Controller,
+                      )),
+                      Expanded(
+                          child: InputWidget(
+                        isCenter: true,
+                        hintText: 'Khối lượng (kg)',
+                        controller: _b3Controller,
+                      ))
+                    ],
+                  )
+                ],
+              ),
             Text('Hẹn giờ hằng ngày (theo phút)'),
             Row(
               spacing: 0.05.sw,
@@ -216,7 +289,7 @@ class _ItemControlScreenScreenState
                     flex: 1,
                     child: TimePickerTextField(
                       onChangeText: (String value) {
-                        print(value);
+                        _beforeTime = value;
                       },
                       controller: _timerController,
                     ))
@@ -224,7 +297,15 @@ class _ItemControlScreenScreenState
             ),
             Row(children: [
               Spacer(),
-              ElevatedButton(onPressed: () {}, child: Text('Xác nhận')),
+              ElevatedButton(onPressed: () {
+                DialogUtils.showLoadingDialog(context, message: 'Loading...');
+                ref.read(controlProvider.notifier).setDailyTimer(token, widget.area.sectorId ?? 1, clientId, (int.parse(_minutesOfDayController.text) * 60).toString(), _beforeTime).then((value) {
+                  listDailyTimer = value;
+                  ScaffoldMessageUtil.showSuccess(context, message: 'Sucess');
+                },).onError((error, stackTrace) {
+                  ScaffoldMessageUtil.showError(context, message: error.toString());
+                },).whenComplete(() => DialogUtils.hideLoadingDialog(context),);
+              }, child: Text('Xác nhận')),
               IconButton(
                   onPressed: () {
                     showDialog(

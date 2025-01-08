@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+
 class CardViewWidget extends StatefulWidget {
-  const CardViewWidget({super.key, required this.listPrice, required this.title, required this.subTitle});
+  const CardViewWidget(
+      {super.key,
+      required this.listPrice,
+      required this.title,
+      required this.subTitle});
   final List<Map<String, dynamic>> listPrice;
   final String title;
   final String subTitle;
@@ -13,14 +18,6 @@ class CardViewWidget extends StatefulWidget {
 class _CardViewWidgetState extends State<CardViewWidget> {
   double total = 0.0;
   int? selectedDuration;
-
-  // List of subscription options
-  // final List<Map<String, dynamic>> subscriptionOptions = [
-  //   {'duration': 3, 'price': 3600000}, // 3 months
-  //   {'duration': 6, 'price': 3300000}, // 6 months
-  //   {'duration': 12, 'price': 3000000}, // 12 months
-  //   {'duration': 24, 'price': 2700000}, // 24 months
-  // ];
 
   // Handle item click
   void _onItemClicked(int duration, double price) {
@@ -64,7 +61,7 @@ class _CardViewWidgetState extends State<CardViewWidget> {
                     Text(
                       widget.subTitle,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12.spMin,
                         color: Colors.white,
                       ),
                       textAlign: TextAlign.center,

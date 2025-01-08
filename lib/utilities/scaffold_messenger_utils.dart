@@ -1,31 +1,103 @@
 import 'package:flutter/material.dart';
 
 class ScaffoldMessageUtil {
-  static final _messengerKey = GlobalKey<ScaffoldMessengerState>();
+  /// Shows a SnackBar with the given message
+  static void showSnackBar(
+      BuildContext context, {
+        required String message,
+        Duration duration = const Duration(seconds: 2),
+        Color? backgroundColor,
+        SnackBarAction? action,
+      }) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-  static GlobalKey<ScaffoldMessengerState> get messengerKey => _messengerKey;
+    // Hide any existing SnackBars
+    scaffoldMessenger.hideCurrentSnackBar();
 
-  static void showMessage(String message, {Color? backgroundColor, Duration? duration}) {
-    final context = _messengerKey.currentContext;
-    if (context != null) {
-      final snackBar = SnackBar(
+    final snackBar = SnackBar(
+      content: Text(message),
+      duration: duration,
+      backgroundColor: backgroundColor,
+      action: action,
+      behavior: SnackBarBehavior.floating,
+    );
+
+    scaffoldMessenger.showSnackBar(snackBar);
+  }
+
+  /// Shows a success message SnackBar
+  static void showSuccess(
+      BuildContext context, {
+        required String message,
+        Duration? duration,
+      }) {
+    showSnackBar(
+      context,
+      message: message,
+      backgroundColor: Colors.green,
+      duration: duration ?? const Duration(seconds: 2),
+    );
+  }
+
+  /// Shows an error message SnackBar
+  static void showError(
+      BuildContext context, {
+        required String message,
+        Duration? duration,
+      }) {
+    showSnackBar(
+      context,
+      message: message,
+      backgroundColor: Colors.red,
+      duration: duration ?? const Duration(seconds: 3),
+    );
+  }
+
+  /// Shows a loading message SnackBar
+  static void showLoading(
+      BuildContext context, {
+        String message = 'Loading...',
+      }) {
+    showSnackBar(
+      context,
+      message: message,
+      duration: const Duration(days: 365), // Long duration until manually dismissed
+      action: SnackBarAction(
+        label: 'Dismiss',
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+    );
+  }
+
+  /// Shows a material banner
+  static void showBanner(
+      BuildContext context, {
+        required String message,
+        required List<Widget> actions,
+        Widget? leading,
+      }) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    scaffoldMessenger.hideCurrentMaterialBanner();
+
+    scaffoldMessenger.showMaterialBanner(
+      MaterialBanner(
         content: Text(message),
-        backgroundColor: backgroundColor ?? Colors.black,
-        duration: duration ?? const Duration(seconds: 3),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      // ScaffoldMessenger.of(context).showMaterialBanner(
-      //   MaterialBanner(
-      //     backgroundColor: Colors.grey.withOpacity(0.5),
-      //     content: Text(message), // <- This can be whatever you want
-      //     actions: <Widget>[
-      //       TextButton(
-      //         onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
-      //         child: const Text('DISMISS'),
-      //       ), // <- So can these
-      //     ],
-      //   ),
-      // );
-    }
+        actions: actions,
+        leading: leading,
+      ),
+    );
+  }
+
+  /// Hides any visible SnackBar
+  static void hideSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  }
+
+  /// Hides any visible MaterialBanner
+  static void hideBanner(BuildContext context) {
+    ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
   }
 }

@@ -4,16 +4,16 @@ import 'package:smart_farm_application/repositories/client_repo/client_infor_imp
 
 import '../base/provider/api_provider_imp.dart';
 
-class ClientInforNotifier extends StateNotifier<AsyncValue<ClientInfor>> {
-  final ClientInforImplement clientInforImplement;
+class ClientInfoNotifier extends StateNotifier<AsyncValue<ClientInfor>> {
+  final ClientInfoImplement clientInfoImplement;
 
-  ClientInforNotifier(this.clientInforImplement)
+  ClientInfoNotifier(this.clientInfoImplement)
       : super(const AsyncValue.loading());
 
-  Future<void> getClientInfor(String token, int id) async {
+  Future<void> getClientInfo(String token, int id) async {
     try {
       state = const AsyncValue.loading();
-      await clientInforImplement.getClientInfo(token, id).then((client) {
+      await clientInfoImplement.getClientInfo(token, id).then((client) {
         state = AsyncValue.data(client);
       },);
     } catch (e) {
@@ -22,12 +22,10 @@ class ClientInforNotifier extends StateNotifier<AsyncValue<ClientInfor>> {
   }
 }
 
-// Provider cho WeatherService
-final clientInforServiceProvider = Provider<ClientInforImplement>(
-    (ref) => ClientInforImplement(ApiProviderImp()));
+final clientInfoServiceProvider = Provider<ClientInfoImplement>(
+    (ref) => ClientInfoImplement(ApiProviderImp()));
 
-// Provider cho WeatherNotifier
-final clientInforProvider =
-    StateNotifierProvider<ClientInforNotifier, AsyncValue<ClientInfor>>((ref) {
-  return ClientInforNotifier(ref.read(clientInforServiceProvider));
+final clientInfoProvider =
+    StateNotifierProvider<ClientInfoNotifier, AsyncValue<ClientInfor>>((ref) {
+  return ClientInfoNotifier(ref.read(clientInfoServiceProvider));
 });

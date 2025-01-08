@@ -47,7 +47,6 @@ class MyApp extends ConsumerWidget {
             onGenerateRoute: AppRouter.onGenerateRoute,
             navigatorKey: AppRouter.navigatorKey,
             navigatorObservers: [NavigationService().navigatorObserver],
-            // scaffoldMessengerKey: ScaffoldMessageUtil.messengerKey,
           );
         }
       );

@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smart_farm_application/components/loading_widget.dart';
+import 'package:smart_farm_application/model/compare_report.dart';
+import 'package:smart_farm_application/view_models/report_view_model.dart';
 
 import '../../components/timePickerTextField_component.dart';
+import '../../configs/contants.dart';
+import '../../model/information.dart';
+import '../../utilities/hive_utils.dart';
+import '../../utilities/scaffold_messenger_utils.dart';
+import '../../utilities/string-utils.dart';
+
 class CompareScreen extends ConsumerStatefulWidget {
   const CompareScreen({super.key});
 
@@ -13,67 +22,20 @@ class CompareScreen extends ConsumerStatefulWidget {
 class _CompareScreenState extends ConsumerState<CompareScreen> {
   final _fromTimeController = TextEditingController();
   final _toTimeController = TextEditingController();
-  final List<Map<String, dynamic>> agriculturalData = [
-    {
-      'id': '1',
-      'area': 'A',
-      'size': '4164.81m²',
-      'waterAmount': '0.0L, 0.0mm',
-      'wateringTime': '0.0 ys',
-      'fertilizer': '0.0 yg, 0.0 yg/m²',
-      'manure': '0.0 yg, 0.0 yg/m²',
-      'pesticide': '0.0 yg, 0.0 yg/m²',
-      'potassium': '0.0 yg, 0.0 yg/m²',
-    },
-    {
-      'id': '2',
-      'area': 'B',
-      'size': '3888.86m²',
-      'waterAmount': '0.0L, 0.0mm',
-      'wateringTime': '0.0 ys',
-      'fertilizer': '0.0 yg, 0.0 yg/m²',
-      'manure': '0.0 yg, 0.0 yg/m²',
-      'pesticide': '0.0 yg, 0.0 yg/m²',
-      'potassium': '0.0 yg, 0.0 yg/m²',
-    },
-    {
-      'id': '6',
-      'area': 'C',
-      'size': '6693.73m²',
-      'waterAmount': '0.0L, 0.0mm',
-      'wateringTime': '0.0 ys',
-      'fertilizer': '0.0 yg, 0.0 yg/m²',
-      'manure': '0.0 yg, 0.0 yg/m²',
-      'pesticide': '0.0 yg, 0.0 yg/m²',
-      'potassium': '0.0 yg, 0.0 yg/m²',
-    },
-    {
-      'id': '7',
-      'area': 'D',
-      'size': '5039.23m²',
-      'waterAmount': '0.0L, 0.0mm',
-      'wateringTime': '0.0 ys',
-      'fertilizer': '0.0 yg, 0.0 yg/m²',
-      'manure': '0.0 yg, 0.0 yg/m²',
-      'pesticide': '0.0 yg, 0.0 yg/m²',
-      'potassium': '0.0 yg, 0.0 yg/m²',
-    },
-    {
-      'id': '8',
-      'area': 'E',
-      'size': '9792.51m²',
-      'waterAmount': '0.0L, 0.0mm',
-      'wateringTime': '0.0 ys',
-      'fertilizer': '0.0 yg, 0.0 yg/m²',
-      'manure': '0.0 yg, 0.0 yg/m²',
-      'pesticide': '0.0 yg, 0.0 yg/m²',
-      'potassium': '0.0 yg, 0.0 yg/m²',
-    },
-  ];
+  List<Map<String, dynamic>> agriculturalData = [];
 
   String _searchQuery = '';
   String _sortField = 'id';
   bool _sortAscending = true;
+  String _fromDate = StringUtils.dateTimeToTimestampString(
+          DateTime.now().subtract(Duration(days: 7)))
+      .toString();
+  String _toDate =
+      StringUtils.dateTimeToTimestampString(DateTime.now()).toString();
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,15 +67,33 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
                   child: Column(
                     spacing: 10.dm,
                     children: [
-                      TimePickerTextField(onChangeText: (String value) {  }, controller: _fromTimeController, getDateTimer: true,),
-                      TimePickerTextField(onChangeText: (String value) {  }, controller: _toTimeController, getDateTimer: true,),
+                      TimePickerTextField(
+                        onChangeText: (String value) {
+                          _fromDate = value;
+                        },
+                        controller: _fromTimeController,
+                        getDateTimer: true,
+                        isInitDateTime: true,
+                        subtractDay: Duration(days: 7),
+                      ),
+                      TimePickerTextField(
+                        onChangeText: (String value) {
+                          _toDate = value;
+                        },
+                        controller: _toTimeController,
+                        getDateTimer: true,
+                        isInitDateTime: true,
+                      ),
                     ],
                   ),
                 ),
                 Expanded(
-                  child: ElevatedButton(onPressed: () {
-
-                  }, child: Text('Xem')),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade100),
+                      onPressed: () {
+                        _getInfoCompare(_fromDate, _toDate);
+                      },
+                      child: Text('Xem')),
                 )
               ],
             ),
@@ -158,7 +138,19 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
               ),
             ),
           Expanded(
-            child: _buildMainContent(),
+            child: ref.watch(reportProvider).when(
+              loading: () => LoadingWidget(),
+              data: (data) {
+                agriculturalData = CompareReport.convert(data);
+                return _buildMainContent();
+              },
+              error: (error, stackTrace) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ScaffoldMessageUtil.showError(context, message: error.toString());
+                });
+                return const Center(child: Text('Failed to load data'));
+              },
+            ),
           ),
         ],
       ),
@@ -171,9 +163,9 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
     if (_searchQuery.isNotEmpty) {
       filteredData = agriculturalData.where((data) {
         return data['area']
-            .toString()
-            .toLowerCase()
-            .contains(_searchQuery.toLowerCase()) ||
+                .toString()
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()) ||
             data['id']
                 .toString()
                 .toLowerCase()
@@ -210,7 +202,7 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
     return Card(
       color: Colors.white,
       elevation: 10.spMin,
-      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: EdgeInsets.symmetric(horizontal: 8.dm, vertical: 4.dm),
       child: ExpansionTile(
         leading: CircleAvatar(
           backgroundColor: Colors.green.shade100,
@@ -260,6 +252,22 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _getInfoCompare(String fromDate, String toDate) async {
+    await HiveUtils.getValue<Information?>(
+            Contant.INFORMATION_LIST, Contant.INFORMATION)
+        .then(
+      (value) {
+        if (value != null) {
+          ref.read(reportProvider.notifier).getCompareReport(
+              value.authToken.toString(),
+              value.clients.first.id.toString(),
+              fromDate,
+              toDate);
+        }
+      },
     );
   }
 

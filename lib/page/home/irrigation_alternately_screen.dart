@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:smart_farm_application/model/client_infor.dart';
+import 'package:smart_farm_application/page/home/extend/item_control_screen.dart';
+
+import '../../model/area.dart';
+import '../../utilities/size_utils.dart';
+
 class IrrigationAlternatelyScreen extends ConsumerStatefulWidget {
   const IrrigationAlternatelyScreen({super.key});
 
@@ -21,7 +27,8 @@ class AnnotationClickListener extends OnPolygonAnnotationClickListener {
   }
 }
 
-class _IrrigationAlternatelyScreenState extends ConsumerState<IrrigationAlternatelyScreen> {
+class _IrrigationAlternatelyScreenState
+    extends ConsumerState<IrrigationAlternatelyScreen> {
   MapboxMap? mapboxMap;
   PolygonAnnotationManager? polygonAnnotationManager;
   PointAnnotationManager? pointAnnotationManager;
@@ -41,7 +48,6 @@ class _IrrigationAlternatelyScreenState extends ConsumerState<IrrigationAlternat
         marginRight: 30,
       ),
     );
-
 
     mapboxMap.annotations.createPolygonAnnotationManager().then((value) {
       polygonAnnotationManager = value;
@@ -74,10 +80,15 @@ class _IrrigationAlternatelyScreenState extends ConsumerState<IrrigationAlternat
   }
 
   void _showBottomBox() {
-
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       isScrollControlled: true,
+      showDragHandle: true,
+      constraints: BoxConstraints(
+          maxHeight: SizeUtils(context).sizeHeight * 0.8,
+          minHeight: SizeUtils(context).sizeHeight * 0.5,
+          minWidth: SizeUtils(context).sizeWidth),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
       ),
@@ -86,7 +97,22 @@ class _IrrigationAlternatelyScreenState extends ConsumerState<IrrigationAlternat
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: Container(),
+          child: ItemControlScreenScreen(
+              area: Area(
+                  positions: [
+                    [Position(0.0, 0.0)]
+                  ],
+                  nameSector: 'alt A',
+                  center: Position(0.0, 0.0),
+                  acreage: 4164.8,
+                  spmeta: Spmeta(
+                      lastUpdate: 1,
+                      rhPin: 1,
+                      sensorDeviceId: 1,
+                      tempPin: 1,
+                      timesActivatedToday: 1),
+                  sectorId: 1),
+              isShowIrrigation: true),
         );
       },
     );
@@ -95,16 +121,16 @@ class _IrrigationAlternatelyScreenState extends ConsumerState<IrrigationAlternat
   void createOneAnnotation() {
     polygonAnnotationManager
         ?.create(PolygonAnnotationOptions(
-        geometry: Polygon(coordinates: [
-          [
-            Position(106.90311, 11.622516),
-            Position(106.9037, 11.622728),
-            Position(106.90386, 11.622214),
-            Position(106.90333, 11.621962)
-          ]
-        ]),
-        fillColor: Colors.white.withOpacity(0.8).value,
-        fillOutlineColor: Colors.white.value))
+            geometry: Polygon(coordinates: [
+              [
+                Position(106.90311, 11.622516),
+                Position(106.9037, 11.622728),
+                Position(106.90386, 11.622214),
+                Position(106.90333, 11.621962)
+              ]
+            ]),
+            fillColor: Colors.white.withOpacity(0.8).value,
+            fillOutlineColor: Colors.white.value))
         .then((value) {
       polygonAnnotation = value;
       addLabelToPolygon(polygonAnnotation!);
