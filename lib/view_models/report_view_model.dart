@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../base/provider/api_provider_imp.dart';
+import '../base/provider/dio_client.dart';
+import '../base/provider/dio_exceptions.dart';
 import '../repositories/report_repo/report_repo_imp.dart';
 
 class ReportNotifier extends StateNotifier<AsyncValue<dynamic>> {
@@ -14,8 +16,8 @@ class ReportNotifier extends StateNotifier<AsyncValue<dynamic>> {
       state = const AsyncValue.loading();
       final img = await reportImplement.getImagesReport(token, sectorId);
       state = AsyncValue.data(img);
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
+    } on DioException catch (e) {
+      state = AsyncValue.error(DioExceptions.fromDioError(e), StackTrace.current);
     }
   }
 
@@ -24,14 +26,14 @@ class ReportNotifier extends StateNotifier<AsyncValue<dynamic>> {
       state = const AsyncValue.loading();
       final responseReport = await reportImplement.getCompareReport(token, clientId, fromDate, toDate);
       state = AsyncValue.data(responseReport);
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
+    }on DioException catch (e) {
+      state = AsyncValue.error(DioExceptions.fromDioError(e), StackTrace.current);
     }
   }
 }
 
 final reportServiceProvider =
-    Provider<ReportImplement>((ref) => ReportImplement(ApiProviderImp()));
+    Provider<ReportImplement>((ref) => ReportImplement(DioClient(Dio())));
 
 final reportProvider =
 StateNotifierProvider<ReportNotifier, AsyncValue<dynamic>>((ref) {

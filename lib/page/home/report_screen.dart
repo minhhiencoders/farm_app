@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_farm_application/components/circle_button_widget.dart';
+import 'package:smart_farm_application/model/daily_timer.dart';
 import 'package:smart_farm_application/page/home/compare_screen.dart';
 import 'package:smart_farm_application/utilities/string-utils.dart';
 import 'package:smart_farm_application/view_models/client_infor_view_model.dart';
@@ -47,7 +48,9 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               center: StringUtils.centerToPositions(element.center),
               acreage: element.area,
               spmeta: element.spmeta,
-              sectorId: element.id));
+              sectorId: element.id,
+              listDailyTimer: element.dailyscheds.map((e) => DailyTimer.fromList(e)).toList()
+          ));
         }
       }
     }

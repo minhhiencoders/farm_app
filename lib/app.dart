@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:smart_farm_application/page/home/navigation_screen.dart';
 import 'package:smart_farm_application/utilities/scaffold_messenger_utils.dart';
 import 'router/routing_app.dart';
@@ -20,9 +21,13 @@ class MyApp extends ConsumerWidget {
           return MaterialApp(
             title: 'Flutter Demo',
             theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light),
               useMaterial3: true,
               // textTheme: Typography.englishLike2018.apply(fontSizeFactor: 1.sp, displayColor: Colors.black)
+              textTheme: GoogleFonts.beVietnamProTextTheme(Theme.of(context).textTheme).copyWith(
+                bodyMedium: GoogleFonts.beVietnamPro(textStyle: Theme.of(context).textTheme.bodyMedium),
+              ),
+              buttonTheme: ButtonThemeData(colorScheme: ColorScheme.light(onPrimary: Colors.white))
             ),
             debugShowCheckedModeBanner: false,
             locale: const Locale('en', 'US'),

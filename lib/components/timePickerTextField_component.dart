@@ -63,7 +63,7 @@ class _DateTimePickerTextFieldState extends State<TimePickerTextField> {
   _updateControllerTimer(TimeOfDay? picked){
     String time = picked!.format(context);
     widget.controller.text = time;
-    widget.onChangeText(StringUtils.timeOfDayToMillisecondsSinceEpoch(picked).toString());
+    widget.onChangeText(StringUtils.timeToMillisecondsSinceEpoch(picked).toString());
   }
 
   void _updateController() {
@@ -119,11 +119,9 @@ class _DateTimePickerTextFieldState extends State<TimePickerTextField> {
       child: Row(
         children: [
           Expanded(
+            flex: 3,
             child: TextField(
               enabled: false,
-              buildCounter: (BuildContext context,
-                  {int? currentLength, int? maxLength, bool? isFocused}) =>
-              null,
               controller: widget.controller,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
@@ -136,7 +134,7 @@ class _DateTimePickerTextFieldState extends State<TimePickerTextField> {
                     .displaySmall
                     ?.copyWith(color: Colors.grey),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                contentPadding: EdgeInsets.zero,
               ),
               textAlign: TextAlign.center,
               style: Theme.of(context)

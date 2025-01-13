@@ -405,8 +405,25 @@ class StringUtils {
     );
 
     // Lấy millisecondsSinceEpoch
-    return combinedDateTime.millisecondsSinceEpoch;
+    return (combinedDateTime.millisecondsSinceEpoch / 1000).round();
   }
+
+  static int timeToMillisecondsSinceEpoch(TimeOfDay timeOfDay) {
+    final DateTime now = DateTime(1970);
+    final DateTime pickedDateTime = DateTime.utc(
+      now.year,
+      now.month,
+      now.day,
+      timeOfDay.hour,
+      timeOfDay.minute,
+    );
+
+    // Convert to millisecondsSinceEpoch in UTC (GMT)
+    final int millisecondsSinceEpochGMT = (pickedDateTime.millisecondsSinceEpoch / 1000).round();
+
+    return millisecondsSinceEpochGMT;
+  }
+
 
   static String getFormattedDate(String timestampStr) {
     int? timestamp = int.tryParse(timestampStr);

@@ -14,13 +14,6 @@ void main() async {
   Hive.registerAdapter(ClientAdapter());
   Hive.registerAdapter(OptsAdapter());
   Hive.registerAdapter(UserAdapter());
-  // Hive.registerAdapter(ClientInforAdapter());
-  // Hive.registerAdapter(SectorAdapter());
-  // Hive.registerAdapter(FlowmetaAdapter());
-  // Hive.registerAdapter(SpmetaAdapter());
-  // Hive.registerAdapter(SpparamsAdapter());
-  // Hive.registerAdapter(SensorDeviceAdapter());
-  // Hive.registerAdapter(FertmetaAdapter());
   MapboxOptions.setAccessToken(Contant.TOKEN_MAPBOX);
   runApp(const ProviderScope(child: MyApp()));
 }

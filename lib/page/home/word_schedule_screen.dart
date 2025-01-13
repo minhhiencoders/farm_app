@@ -13,6 +13,6 @@ class WordScheduleScreen extends ConsumerStatefulWidget {
 class _WordScheduleScreenState extends ConsumerState<WordScheduleScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Center(child: Text('Lịch làm việc'),);
   }
 }

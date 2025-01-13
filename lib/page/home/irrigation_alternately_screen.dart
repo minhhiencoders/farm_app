@@ -4,199 +4,113 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:smart_farm_application/model/client_infor.dart';
 import 'package:smart_farm_application/page/home/extend/item_control_screen.dart';
 
+import '../../components/circle_button_widget.dart';
+import '../../components/loading_widget.dart';
+import '../../components/map_arears_widget.dart';
 import '../../model/area.dart';
+import '../../model/daily_timer.dart';
 import '../../utilities/size_utils.dart';
+import '../../utilities/string-utils.dart';
+import '../../view_models/client_infor_view_model.dart';
 
 class IrrigationAlternatelyScreen extends ConsumerStatefulWidget {
   const IrrigationAlternatelyScreen({super.key});
 
   @override
-  ConsumerState createState() => _IrrigationAlternatelyScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _IrrigationAlternatelyScreenState();
 }
 
-class AnnotationClickListener extends OnPolygonAnnotationClickListener {
-  AnnotationClickListener({
-    required this.onAnnotationClick,
-  });
-
-  final void Function(PolygonAnnotation annotation) onAnnotationClick;
-
-  @override
-  void onPolygonAnnotationClick(PolygonAnnotation annotation) {
-    onAnnotationClick(annotation);
-  }
-}
-
-class _IrrigationAlternatelyScreenState
-    extends ConsumerState<IrrigationAlternatelyScreen> {
-  MapboxMap? mapboxMap;
-  PolygonAnnotationManager? polygonAnnotationManager;
-  PointAnnotationManager? pointAnnotationManager;
-  PolygonAnnotation? polygonAnnotation;
-  PolygonAnnotation? _selectedPolygon;
-  void _onMapCreated(MapboxMap mapboxMap) {
-    this.mapboxMap = mapboxMap;
-
-    mapboxMap.style;
-    mapboxMap.attribution.updateSettings(AttributionSettings(enabled: false));
-    mapboxMap.logo.updateSettings(
-      LogoSettings(
-        position: OrnamentPosition.BOTTOM_LEFT,
-        marginBottom: 10,
-        marginLeft: 10,
-        marginTop: 30,
-        marginRight: 30,
-      ),
-    );
-
-    mapboxMap.annotations.createPolygonAnnotationManager().then((value) {
-      polygonAnnotationManager = value;
-      createOneAnnotation();
-      // var options = <PolygonAnnotationOptions>[];
-      // for (var i = 0; i < 1; i++) {
-      //   options.add(PolygonAnnotationOptions(
-      //       geometry: Polygon(coordinates: [
-      //         [
-      //           Position(108.26842, 12.691489),
-      //           Position(108.2693, 12.691626),
-      //           Position(108.26931, 12.691157),
-      //           Position(108.268364, 12.691025)
-      //         ]
-      //       ]),
-      //       fillColor: Colors.yellow.value));
-      // }
-      // polygonAnnotationManager?.createMulti(options);
-      polygonAnnotationManager?.addOnPolygonAnnotationClickListener(
-        AnnotationClickListener(
-          onAnnotationClick: (annotation) {
-            annotation.fillColor = Colors.green.withOpacity(0.8).value;
-            annotation.fillOutlineColor = Colors.white.value;
-            polygonAnnotationManager?.update(annotation);
-            _showBottomBox();
-          },
-        ),
-      );
-    });
-  }
-
-  void _showBottomBox() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      isScrollControlled: true,
-      showDragHandle: true,
-      constraints: BoxConstraints(
-          maxHeight: SizeUtils(context).sizeHeight * 0.8,
-          minHeight: SizeUtils(context).sizeHeight * 0.5,
-          minWidth: SizeUtils(context).sizeWidth),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
-      ),
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: ItemControlScreenScreen(
-              area: Area(
-                  positions: [
-                    [Position(0.0, 0.0)]
-                  ],
-                  nameSector: 'alt A',
-                  center: Position(0.0, 0.0),
-                  acreage: 4164.8,
-                  spmeta: Spmeta(
-                      lastUpdate: 1,
-                      rhPin: 1,
-                      sensorDeviceId: 1,
-                      tempPin: 1,
-                      timesActivatedToday: 1),
-                  sectorId: 1),
-              isShowIrrigation: true),
-        );
-      },
-    );
-  }
-
-  void createOneAnnotation() {
-    polygonAnnotationManager
-        ?.create(PolygonAnnotationOptions(
-            geometry: Polygon(coordinates: [
-              [
-                Position(106.90311, 11.622516),
-                Position(106.9037, 11.622728),
-                Position(106.90386, 11.622214),
-                Position(106.90333, 11.621962)
-              ]
-            ]),
-            fillColor: Colors.white.withOpacity(0.8).value,
-            fillOutlineColor: Colors.white.value))
-        .then((value) {
-      polygonAnnotation = value;
-      addLabelToPolygon(polygonAnnotation!);
-    });
-  }
-
-  void addLabelToPolygon(PolygonAnnotation polygonAnnotation) {
-    final coordinates = polygonAnnotation.geometry.coordinates.first;
-
-    // Simple centroid calculation (can be replaced with a more accurate method)
-    double avgLng = 0.0;
-    double avgLat = 0.0;
-
-    for (var position in coordinates) {
-      avgLng += position.lng;
-      avgLat += position.lat;
-    }
-
-    avgLng /= coordinates.length;
-    avgLat /= coordinates.length;
-
-    mapboxMap?.annotations.createPointAnnotationManager().then((symbolManager) {
-      symbolManager.create(PointAnnotationOptions(
-        geometry: Point(coordinates: Position(avgLng, avgLat)),
-        textField: 'alt A', // The label text
-        textSize: 14.0,
-        textColor: Colors.red.value,
-      ));
-    });
-  }
-
-  void _flyToAnnotation(Position position) {
-    mapboxMap?.flyTo(
-      CameraOptions(
-        center: Point(coordinates: position),
-        anchor: ScreenCoordinate(x: 0, y: 0),
-        zoom: 17,
-        pitch: 20,
-      ),
-      MapAnimationOptions(duration: 2000, startDelay: 0),
-    );
-  }
-
+class _IrrigationAlternatelyScreenState extends ConsumerState<IrrigationAlternatelyScreen> {
   @override
   Widget build(BuildContext context) {
+    final client = ref.watch(clientInfoProvider);
+    List<Area> listArea = [];
+    if (client.hasValue) {
+      List<Sector> compositeSectors =
+          ref.watch(clientInfoProvider).value?.compositeSectors ?? <Sector>[];
+      if (compositeSectors.isNotEmpty) {
+        for (var element in compositeSectors) {
+          listArea.add(Area(
+              positions: [StringUtils.coordinatesToPositions(element.coords)],
+              nameSector: element.name ?? '',
+              center: StringUtils.centerToPositions(element.center),
+              acreage: element.area,
+              spmeta: element.spmeta,
+              sectorId: element.id,
+              listDailyTimer: element.dailyscheds.map((e) => DailyTimer.fromList(e)).toList()
+          ));
+        }
+      }
+    }
+
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _flyToAnnotation(Position(106.90311, 11.622516));
+      resizeToAvoidBottomInset: false,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: CircleButtonWidget(
+        voidCallback: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                backgroundColor: Colors.white,
+                title: const Text('Tất cả khu vực'),
+                content: SizedBox(
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: listArea.length,
+                    itemBuilder: (context, index) {
+                      final area = listArea[index];
+                      return Padding(
+                        padding: EdgeInsets.only(
+                            bottom: index < listArea.length - 1
+                                ? 8
+                                : 0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          child: Row(
+                            children: [
+                              RichText(text: TextSpan(text: 'Tên: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: area.nameSector)])),
+                              Spacer(),
+                              RichText(text: TextSpan(text: 'TDiện tích: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: area.acreage.toString())])),
+                            ],
+                          ), // Assuming DailyTimer has a name property
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF1F2937),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                    ),
+                    child: const Text('Ok'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         },
-        child: const Icon(Icons.my_location),
+        icon: Icons.list_alt,
       ),
-      body: MapWidget(
-        key: const ValueKey("mapWidget"),
-        cameraOptions: CameraOptions(
-          center: Point(coordinates: Position(106.90311, 11.622516)),
-          zoom: 15.0,
-        ),
-        styleUri: MapboxStyles.SATELLITE_STREETS,
-        textureView: true,
-        onMapCreated: _onMapCreated,
-        // onStyleLoadedListener: (_) {
-        //   _setupPolygonAnnotations();
-        //   _setupPointAnnotations();
-        // },
-      ),
+      body: client.hasValue
+          ? MapAreasWidget(listArea: listArea,isShowIrrigation: true)
+          : LoadingWidget(),
     );
   }
 }

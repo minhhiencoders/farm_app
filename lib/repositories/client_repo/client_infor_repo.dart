@@ -1,8 +1,9 @@
-import 'package:smart_farm_application/base/provider/api_provider.dart';
 import 'package:smart_farm_application/model/client_infor.dart';
+
+import '../../base/provider/dio_client.dart';
 
 abstract class ClientInfoRepository {
   Future<ClientInfor> getClientInfo(String token, int id);
 
-  ClientInfoRepository(ApiProvider apiProvider);
+  ClientInfoRepository(DioClient dioClient);
 }

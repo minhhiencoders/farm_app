@@ -106,6 +106,7 @@ class _SensorStationScreenState extends ConsumerState<SensorStationScreen> {
     final sensors = ref.watch(clientInfoProvider).value?.sensorDevices;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
         onPressed: () {
           _flyToAnnotation(StringUtils.centerToPositions(sensors!.first.coord));
         },

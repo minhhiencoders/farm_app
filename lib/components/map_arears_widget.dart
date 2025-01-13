@@ -18,10 +18,12 @@ class MapAreasWidget extends ConsumerStatefulWidget {
     super.key,
     required this.listArea,
     this.isReport = false,
+    this.isShowIrrigation = false
   });
 
   final List<Area> listArea;
   final bool isReport;
+  final bool isShowIrrigation;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MapAreasWidgetState();
 }
@@ -168,12 +170,7 @@ class _MapAreasWidgetState extends ConsumerState<MapAreasWidget> {
           child: Builder(
             builder: (context) => Scaffold(
               backgroundColor: Colors.white,
-              body: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: ItemControlScreenScreen(area: area!, isShowIrrigation: false),
-              ),
+              body: ItemControlScreenScreen(area: area!, isShowIrrigation: widget.isShowIrrigation),
             ),
           ),
         );

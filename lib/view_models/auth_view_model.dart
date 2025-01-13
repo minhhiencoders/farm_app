@@ -1,8 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_farm_application/model/information.dart';
 
-import '../base/custom-exception.dart';
-import '../base/provider/api_provider_imp.dart';
+import '../base/provider/dio_client.dart';
+import '../base/provider/dio_exceptions.dart';
 import '../configs/contants.dart';
 import '../model/auth.dart';
 import '../repositories/login_repo/login_repo_imp.dart';
@@ -47,14 +48,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
           }
         },
       ).onError(
-        (error, stackTrace) {
+        (DioException error, stackTrace) {
+          final errorMessage = DioExceptions.fromDioError(error);
           state = state = AuthState(
-              status: AuthStatus.error, errorMessage: error.toString());
+              status: AuthStatus.error, errorMessage: errorMessage.toString());
         },
       );
-    } on ECException catch (e) {
-      state = state =
-          AuthState(status: AuthStatus.error, errorMessage: e.toString());
+    } on DioException catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e);
+      state = state = AuthState(
+          status: AuthStatus.error, errorMessage: errorMessage.toString());
     }
   }
 
@@ -68,7 +71,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
 final apiServiceProvider = Provider<LoginRepoImp>((ref) {
-  return LoginRepoImp(ApiProviderImp());
+  return LoginRepoImp(DioClient(Dio()));
 });
 final authNotifierProvider =
     StateNotifierProvider<AuthNotifier, AuthState>((ref) {

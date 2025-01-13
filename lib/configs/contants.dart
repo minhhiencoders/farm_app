@@ -7,4 +7,6 @@ class Contant {
   static String AUTHEN_TOKEN = "authToken";
   static String INFORMATION = "information";
   static String INFORMATION_LIST = "informationList";
+  static const int receiveTimeout = 15000;
+  static const int connectionTimeout = 30000;
 }
