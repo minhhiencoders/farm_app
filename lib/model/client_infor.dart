@@ -216,7 +216,7 @@ class Spmeta extends Equatable {
     required this.timesActivatedToday,
   });
 
-  final int? lastUpdate;
+  final String? lastUpdate;
   final int? rhPin;
   final int? sensorDeviceId;
   final int? tempPin;
@@ -224,7 +224,7 @@ class Spmeta extends Equatable {
 
   factory Spmeta.fromJson(Map<String, dynamic> json) {
     return Spmeta(
-      lastUpdate: json["lastUpdate"],
+      lastUpdate: json["lastUpdate"].toString(),
       rhPin: json["rhPin"],
       sensorDeviceId: json["sensorDeviceId"],
       tempPin: json["tempPin"],

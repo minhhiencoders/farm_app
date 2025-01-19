@@ -18,17 +18,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> _loadToken() async {
-    await HiveUtils.getValue<String?>(
-            Contant.AUTHENTICATION, Contant.AUTHEN_TOKEN)
-        .then(
-      (value) {
-        if (value != null) {
-          state = AuthState(status: AuthStatus.authenticated, token: value);
-        } else {
-          state = AuthState(status: AuthStatus.unauthenticated, token: value);
-        }
-      },
-    );
+    final value = HiveUtils.getData<String>(key: Contant.AUTHEN_TOKEN);
+    if (value != null) {
+      state = AuthState(status: AuthStatus.authenticated, token: value);
+    } else {
+      state = AuthState(status: AuthStatus.unauthenticated, token: value);
+    }
   }
 
   Future<void> authenticationLogin(String email, String password) async {
@@ -41,10 +36,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
               status: AuthStatus.authenticated,
               token: information.authToken, // Use actual token from API
             );
-            await HiveUtils.putValue<String?>(Contant.AUTHENTICATION,
-                Contant.AUTHEN_TOKEN, information.authToken);
-            await HiveUtils.putValue<Information?>(
-                Contant.INFORMATION_LIST, Contant.INFORMATION, information);
+            HiveUtils.saveData(key: Contant.AUTHEN_TOKEN, value: information.authToken);
+            HiveUtils.saveData<Information>(key: Contant.INFORMATION, value: information);
           }
         },
       ).onError(
@@ -62,7 +55,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    await HiveUtils.closeAll().whenComplete(
+    await HiveUtils.closeAllBoxes().whenComplete(
       () {
         state = AuthState(status: AuthStatus.unauthenticated);
       },

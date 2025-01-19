@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smart_farm_application/model/daily_timer.dart';
+import 'package:smart_farm_application/utilities/string-utils.dart';
 import 'package:smart_farm_application/view_models/control_view_model.dart';
 import '../../../components/input_widget.dart';
 import '../../../components/timePickerTextField_component.dart';
@@ -59,16 +60,11 @@ class _ItemControlScreenScreenState
   }
 
   _getInit() async {
-    await HiveUtils.getValue<Information?>(
-            Contant.INFORMATION_LIST, Contant.INFORMATION)
-        .then(
-      (value) {
-        if (value != null) {
-          token = value.authToken ?? '';
-          clientId = value.clients.first.id ?? 1;
-        }
-      },
-    );
+    final value = HiveUtils.getData<Information?>(key: Contant.INFORMATION);
+    if (value != null) {
+      token = value.authToken ?? '';
+      clientId = value.clients.first.id ?? 1;
+    }
   }
 
   @override
@@ -423,10 +419,11 @@ class _ItemControlScreenScreenState
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 12, horizontal: 16),
                                     child: Row(
+                                      mainAxisSize: MainAxisSize.max,
                                       children: [
-                                        RichText(text: TextSpan(text: 'Thời gian: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: timer.time)])),
+                                        RichText(text: TextSpan(text: 'Thời gian: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: StringUtils.getFormattedTimeUTC(timer.time))])),
                                         Spacer(),
-                                        RichText(text: TextSpan(text: 'Thời lượng (phút): ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: timer.value)])),
+                                        RichText(text: TextSpan(text: 'Thời lượng (phút): ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: (num.parse(timer.value).toInt() / 60).toString())])),
                                       ],
                                     ), // Assuming DailyTimer has a name property
                                   ),

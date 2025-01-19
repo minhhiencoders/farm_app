@@ -76,7 +76,7 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
                             children: [
                               RichText(text: TextSpan(text: 'Tên: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: area.nameSector)])),
                               Spacer(),
-                              RichText(text: TextSpan(text: 'TDiện tích: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: area.acreage.toString())])),
+                              RichText(text: TextSpan(text: 'Diện tích: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: area.acreage.toString())])),
                             ],
                           ), // Assuming DailyTimer has a name property
                         ),

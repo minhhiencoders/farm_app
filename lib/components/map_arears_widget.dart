@@ -34,6 +34,8 @@ class _MapAreasWidgetState extends ConsumerState<MapAreasWidget> {
   PointAnnotationManager? pointAnnotationManager;
   List<PolygonAnnotation?> _polygonAnnotations = [];
   PolygonAnnotation? _selectedPolygon;
+  Position? positionZoomCurrent;
+  bool isZoomOut = false;
   @override
   void initState() {
     super.initState();
@@ -43,7 +45,7 @@ class _MapAreasWidgetState extends ConsumerState<MapAreasWidget> {
     this.mapboxMap = mapboxMap;
 
     mapboxMap.style;
-    mapboxMap.attribution.updateSettings(AttributionSettings(enabled: false));
+    // mapboxMap.attribution.updateSettings(AttributionSettings(enabled: false));
     mapboxMap.logo.updateSettings(
       LogoSettings(
         position: OrnamentPosition.BOTTOM_LEFT,
@@ -55,16 +57,34 @@ class _MapAreasWidgetState extends ConsumerState<MapAreasWidget> {
     );
   }
 
-  void _flyToAnnotation(Position position) {
-    mapboxMap?.flyTo(
-      CameraOptions(
-        center: Point(coordinates: position),
-        anchor: ScreenCoordinate(x: 0, y: 0),
-        zoom: 17,
-        pitch: 20,
-      ),
-      MapAnimationOptions(duration: 2000, startDelay: 0),
-    );
+
+
+  void _flyToAnnotation(Position position, [bool zoomOut = false]) {
+    setState(() {
+      positionZoomCurrent = position;
+      isZoomOut = !zoomOut;
+    });
+    if(zoomOut){
+      mapboxMap?.flyTo(
+        CameraOptions(
+          center: Point(coordinates: position),
+          anchor: ScreenCoordinate(x: 0, y: 0),
+          zoom: 16,
+          pitch: 20,
+        ),
+        MapAnimationOptions(duration: 2000, startDelay: 0),
+      );
+    }else{
+      mapboxMap?.flyTo(
+        CameraOptions(
+          center: Point(coordinates: position),
+          anchor: ScreenCoordinate(x: 0, y: 0),
+          zoom: 18,
+          pitch: 20,
+        ),
+        MapAnimationOptions(duration: 2000, startDelay: 0),
+      );
+    }
   }
 
   void _setupPolygonAnnotations() async {
@@ -218,17 +238,12 @@ class _MapAreasWidgetState extends ConsumerState<MapAreasWidget> {
   }
 
   Future<void> _getImages(String sectorId) async {
-    await HiveUtils.getValue<Information?>(
-            Contant.INFORMATION_LIST, Contant.INFORMATION)
-        .then(
-      (value) {
-        if (value != null) {
-          ref
-              .read(reportProvider.notifier)
-              .getImagesReport(value.authToken.toString(), sectorId);
-        }
-      },
-    );
+    final value = HiveUtils.getData<Information?>(key: Contant.INFORMATION);
+    if (value != null) {
+      ref
+          .read(reportProvider.notifier)
+          .getImagesReport(value.authToken.toString(), sectorId);
+    }
   }
 
   @override
@@ -247,9 +262,9 @@ class _MapAreasWidgetState extends ConsumerState<MapAreasWidget> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         onPressed: () {
-          _flyToAnnotation(widget.listArea.first.center);
+          isZoomOut ? _flyToAnnotation(positionZoomCurrent!, isZoomOut) : _flyToAnnotation(widget.listArea.first.center);
         },
-        child: const Icon(Icons.my_location),
+        child: isZoomOut ? const Icon(Icons.all_out) : const Icon(Icons.my_location_outlined),
       ),
       body: MapWidget(
         key: const ValueKey("mapWidget"),

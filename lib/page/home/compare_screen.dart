@@ -7,6 +7,7 @@ import 'package:smart_farm_application/view_models/report_view_model.dart';
 
 import '../../components/timePickerTextField_component.dart';
 import '../../configs/contants.dart';
+// import '../../model/information.dart';
 import '../../model/information.dart';
 import '../../utilities/hive_utils.dart';
 import '../../utilities/scaffold_messenger_utils.dart';
@@ -256,19 +257,14 @@ class _CompareScreenState extends ConsumerState<CompareScreen> {
   }
 
   void _getInfoCompare(String fromDate, String toDate) async {
-    await HiveUtils.getValue<Information?>(
-            Contant.INFORMATION_LIST, Contant.INFORMATION)
-        .then(
-      (value) {
-        if (value != null) {
-          ref.read(reportProvider.notifier).getCompareReport(
-              value.authToken.toString(),
-              value.clients.first.id.toString(),
-              fromDate,
-              toDate);
-        }
-      },
-    );
+    final value = HiveUtils.getData<Information?>(key: Contant.INFORMATION);
+    if (value != null) {
+      ref.read(reportProvider.notifier).getCompareReport(
+          value.authToken.toString(),
+          value.clients.first.id.toString(),
+          fromDate,
+          toDate);
+    }
   }
 
   void _showSortOptions() {

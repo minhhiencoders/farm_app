@@ -64,8 +64,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
             topLeft: Radius.circular(0),
             topRight: Radius.circular(16),
           ),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bW91bnRhaW5zfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-1.jpg',
             width: 120,
             height: 120,
             fit: BoxFit.cover,
@@ -73,8 +73,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
         ),
     () => ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8bW91bnRhaW5zfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-2.jpg',
             width: 120,
             height: 160,
             fit: BoxFit.cover,
@@ -87,8 +87,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
             topLeft: Radius.circular(0),
             topRight: Radius.circular(16),
           ),
-          child: Image.network(
-            'https://picsum.photos/seed/32/600',
+          child: Image.asset(
+            'lib/assets/images/image-3.jpg',
             width: 100,
             height: 0,
             fit: BoxFit.cover,
@@ -101,8 +101,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
             topLeft: Radius.circular(0),
             topRight: Radius.circular(16),
           ),
-          child: Image.network(
-            'https://picsum.photos/seed/32/600',
+          child: Image.asset(
+            'lib/assets/images/image-4.jpg',
             width: 100,
             height: 0,
             fit: BoxFit.cover,
@@ -115,8 +115,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
             topLeft: Radius.circular(0),
             topRight: Radius.circular(16),
           ),
-          child: Image.network(
-            'https://picsum.photos/seed/32/600',
+          child: Image.asset(
+            'lib/assets/images/image-5.jpg',
             width: 100,
             height: 0,
             fit: BoxFit.cover,
@@ -129,8 +129,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
             topLeft: Radius.circular(16),
             topRight: Radius.circular(0),
           ),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8bW91bnRhaW5zfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-6.jpg',
             width: 80,
             height: 180,
             fit: BoxFit.cover,
@@ -138,8 +138,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
         ),
     () => ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1434394354979-a235cd36269d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fG1vdW50YWluc3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-7.jpg',
             width: 120,
             height: 160,
             fit: BoxFit.cover,
@@ -147,8 +147,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
         ),
     () => ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8bW91bnRhaW5zfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-8.jpg',
             width: 120,
             height: 180,
             fit: BoxFit.cover,
@@ -161,8 +161,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
             topLeft: Radius.circular(16),
             topRight: Radius.circular(0),
           ),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1445363692815-ebcd599f7621?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fG1vdW50YWluc3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-9.jpg',
             width: 120,
             height: 190,
             fit: BoxFit.cover,
@@ -170,8 +170,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
         ),
     () => ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1540390769625-2fc3f8b1d50c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjN8fG1vdW50YWluc3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-10.jpg',
             width: 120,
             height: 160,
             fit: BoxFit.cover,
@@ -179,8 +179,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
         ),
     () => ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1443632864897-14973fa006cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzJ8fG1vdW50YWluc3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-11.jpg',
             width: 120,
             height: 180,
             fit: BoxFit.cover,
@@ -193,8 +193,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
             topLeft: Radius.circular(16),
             topRight: Radius.circular(0),
           ),
-          child: Image.network(
-            'https://images.unsplash.com/photo-1614597396930-cd6760b99f7c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzZ8fG1vdW50YWluc3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60',
+          child: Image.asset(
+            'lib/assets/images/image-12.jpg',
             width: 120,
             height: 190,
             fit: BoxFit.cover,
@@ -202,8 +202,8 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
         ),
     () => ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            'https://picsum.photos/seed/32/600',
+          child: Image.asset(
+            'lib/assets/images/image-13.jpg',
             width: 120,
             height: 160,
             fit: BoxFit.cover,
@@ -211,13 +211,22 @@ class _BackGroundOnBoardingState extends State<BackGroundOnBoarding> {
         ),
     () => ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            'https://picsum.photos/seed/32/600',
+          child: Image.asset(
+            'lib/assets/images/image-14.jpg',
             width: 120,
             height: 160,
             fit: BoxFit.cover,
           ),
         ),
+    () => ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Image.asset(
+        'lib/assets/images/image-15.jpg',
+        width: 120,
+        height: 160,
+        fit: BoxFit.cover,
+      ),
+    ),
   ];
 
   @override

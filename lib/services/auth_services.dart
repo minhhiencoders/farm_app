@@ -22,10 +22,12 @@ class AuthWidget extends ConsumerWidget {
       case AuthStatus.loading:
         return const LoadingWidget();
       case AuthStatus.error:
-        return const OnBoardingScreen();
-      // case AuthStatus.unauthenticated:
-      //   print("ccccccccccccc");
-      //   return const SplashWidget(widget: OnBoardingScreen());
+        return ScaffoldMessenger(
+            child: Builder(
+          builder: (context) {
+            return OnBoardingScreen(error: authState.errorMessage);
+          }
+        ));
       default:
         return const OnBoardingScreen();
     }

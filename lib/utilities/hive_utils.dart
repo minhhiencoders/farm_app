@@ -1,81 +1,100 @@
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class HiveUtils {
-  /// Opens a Hive box with the given name.
-  /// If the box is already open, it returns the existing instance.
-  static Future<Box<T>> openBox<T>(String boxName) async {
-    if (!Hive.isBoxOpen(boxName)) {
-      return await Hive.openBox<T>(boxName);
+  static late Box box;
+
+  /// Initialize Hive with a custom path and open the default box
+  static Future<void> initHive([String boxName = 'myBox']) async {
+    final appDocumentDirectory =
+    await path_provider.getApplicationDocumentsDirectory();
+    Hive.init(appDocumentDirectory.path);
+    box = await Hive.openBox(boxName);
+  }
+
+  /// Register an adapter for a custom object
+  static void registerAdapter<T>(TypeAdapter<T> adapter) {
+    if (!Hive.isAdapterRegistered(adapter.typeId)) {
+      Hive.registerAdapter(adapter);
     }
-    return Hive.box<T>(boxName);
   }
 
-  /// Add data to a box
-  static Future<void> addData<T>(String boxName, T data) async {
-    final box = await openBox<T>(boxName);
-    await box.add(data);
-  }
-
-  /// Stores a value in the specified Hive box.
-  ///
-  /// [boxName]: Name of the Hive box.
-  /// [key]: Key to store the value under.
-  /// [value]: Value to store.
-  static Future<void> putValue<T>(String boxName, dynamic key, T value) async {
-    final box = await openBox<T>(boxName);
+  /// Save data to the box
+  static Future<void> saveData<T>({
+    required String key,
+    required T value,
+  }) async {
     await box.put(key, value);
   }
 
-  /// Retrieves a value from the specified Hive box.
-  ///
-  /// [boxName]: Name of the Hive box.
-  /// [key]: Key to retrieve the value from.
-  /// [defaultValue]: Default value to return if the key is not found.
-  static Future<T?> getValue<T>(String boxName, dynamic key,
-      {T? defaultValue}) async {
-    final box = await openBox<T>(boxName);
-    return box.get(key, defaultValue: defaultValue);
+  /// Get data from the box
+  static T? getData<T>({
+    required String key,
+  }) {
+    return box.get(key) as T?;
   }
 
-  /// Deletes a value from the specified Hive box.
-  ///
-  /// [boxName]: Name of the Hive box.
-  /// [key]: Key of the value to delete.
-  static Future<void> deleteValue<T>(String boxName, dynamic key) async {
-    final box = await openBox<T>(boxName);
+  /// Delete data from the box
+  static Future<void> deleteData({
+    required String key,
+  }) async {
     await box.delete(key);
   }
 
-  /// Clears all the values from the specified Hive box.
-  ///
-  /// [boxName]: Name of the Hive box.
-  static Future<void> clearBox<T>(String boxName) async {
-    final box = await openBox<T>(boxName);
+  /// Clear all data in the box
+  static Future<void> clearBox() async {
     await box.clear();
   }
 
-  /// Closes the specified Hive box.
-  ///
-  /// [boxName]: Name of the Hive box.
-  static Future<void> closeBox(String boxName) async {
-    if (Hive.isBoxOpen(boxName)) {
-      final box = Hive.box(boxName);
-      await box.close();
-    }
+  /// Delete the box and all its contents
+  static Future<void> deleteBox() async {
+    await box.deleteFromDisk();
   }
 
-  /// Checks if a key exists in the specified Hive box.
-  ///
-  /// [boxName]: Name of the Hive box.
-  /// [key]: Key to check.
-  static Future<bool> containsKey<T>(String boxName, dynamic key) async {
-    final box = await openBox<T>(boxName);
+  /// Get all keys in the box
+  static List<dynamic> getAllKeys() {
+    return box.keys.toList();
+  }
+
+  /// Get all values in the box
+  static List<dynamic> getAllValues() {
+    return box.values.toList();
+  }
+
+  /// Check if a key exists in the box
+  static bool containsKey({
+    required String key,
+  }) {
     return box.containsKey(key);
   }
 
-  /// Close all boxes
-  static Future<void> closeAll() async {
-    // await Hive.close();
-    await Hive.deleteFromDisk();
+  /// Add multiple items to the box
+  static Future<void> addMultiple({
+    required Map<String, dynamic> entries,
+  }) async {
+    await box.putAll(entries);
+  }
+
+  /// Close all open Hive boxes
+  static Future<void> closeAllBoxes() async {
+    try {
+      await box.clear();
+      await box.deleteFromDisk();
+      await box.flush();
+      await box.close();
+    } catch (e) {
+      print('Error closing Hive boxes: $e');
+      rethrow;
+    }
+  }
+
+  /// Check if the box is open
+  static bool isBoxOpen() {
+    return box.isOpen;
+  }
+
+  /// Get the box name
+  static String getBoxName() {
+    return box.name;
   }
 }

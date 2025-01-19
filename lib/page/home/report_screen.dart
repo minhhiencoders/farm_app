@@ -49,8 +49,9 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               acreage: element.area,
               spmeta: element.spmeta,
               sectorId: element.id,
-              listDailyTimer: element.dailyscheds.map((e) => DailyTimer.fromList(e)).toList()
-          ));
+              listDailyTimer: element.dailyscheds
+                  .map((e) => DailyTimer.fromList(e))
+                  .toList()));
         }
       }
     }
@@ -59,19 +60,26 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: CircleButtonWidget(
-        voidCallback: () async{
-          await HiveUtils.getValue<Information?>(
-              Contant.INFORMATION_LIST, Contant.INFORMATION)
-              .then(
-                (value) {
-              if (value != null) {
-                ref.read(reportProvider.notifier).getCompareReport(value.authToken.toString(), value.clients.first.id.toString(), StringUtils.dateTimeToTimestampString(DateTime.now().subtract(Duration(days: 7))).toString(), StringUtils.dateTimeToTimestampString(DateTime.now()).toString());
-
-              }
-            },
-          ).whenComplete(() => Navigator.of(context).pushNamed(
-            AppRouter.compare,
-          ),);
+        voidCallback: () async {
+          final value =
+              HiveUtils.getData<Information?>(key: Contant.INFORMATION);
+          if (value != null) {
+            ref
+                .read(reportProvider.notifier)
+                .getCompareReport(
+                    value.authToken.toString(),
+                    value.clients.first.id.toString(),
+                    StringUtils.dateTimeToTimestampString(
+                            DateTime.now().subtract(Duration(days: 7)))
+                        .toString(),
+                    StringUtils.dateTimeToTimestampString(DateTime.now())
+                        .toString())
+                .whenComplete(
+                  () => Navigator.of(context).pushNamed(
+                    AppRouter.compare,
+                  ),
+                );
+          }
         },
         icon: Icons.info,
       ),

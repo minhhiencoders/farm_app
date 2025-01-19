@@ -8,6 +8,7 @@ import 'package:smart_farm_application/model/information.dart';
 import 'package:smart_farm_application/utilities/drawer_list_utils.dart';
 import 'package:smart_farm_application/utilities/size_utils.dart';
 import 'package:smart_farm_application/view_models/auth_view_model.dart';
+import 'package:upgrader/upgrader.dart';
 
 import '../../configs/contants.dart';
 import '../../utilities/hive_utils.dart';
@@ -45,16 +46,11 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
   }
 
   Future<void> _getClientInfo() async {
-    await HiveUtils.getValue<Information?>(
-            Contant.INFORMATION_LIST, Contant.INFORMATION)
-        .then(
-      (value) {
-        if (value != null) {
-          ref.read(clientInfoProvider.notifier).getClientInfo(
-              value.authToken.toString(), value.clients.first.id ?? 1);
-        }
-      },
-    );
+    final value = HiveUtils.getData<Information?>(key: Contant.INFORMATION);
+    if (value != null) {
+      ref.read(clientInfoProvider.notifier).getClientInfo(
+          value.authToken.toString(), value.clients.first.id ?? 1);
+    }
   }
 
   void _initializeAnimations() {
@@ -216,13 +212,15 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
   @override
   Widget build(BuildContext context) {
     final size = SizeUtils(context);
-    return Scaffold(
-      backgroundColor: Colors.blueAccent,
-      body: Stack(
-        children: [
-          _buildDrawerContent(size),
-          _buildMainContent(),
-        ],
+    return UpgradeAlert(
+      child: Scaffold(
+        backgroundColor: Colors.blueAccent,
+        body: Stack(
+          children: [
+            _buildDrawerContent(size),
+            _buildMainContent(),
+          ],
+        ),
       ),
     );
   }

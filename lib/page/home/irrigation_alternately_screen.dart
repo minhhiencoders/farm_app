@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:smart_farm_application/model/client_infor.dart';
-import 'package:smart_farm_application/page/home/extend/item_control_screen.dart';
 
 import '../../components/circle_button_widget.dart';
 import '../../components/loading_widget.dart';
 import '../../components/map_arears_widget.dart';
 import '../../model/area.dart';
 import '../../model/daily_timer.dart';
-import '../../utilities/size_utils.dart';
 import '../../utilities/string-utils.dart';
 import '../../view_models/client_infor_view_model.dart';
 
@@ -78,7 +75,7 @@ class _IrrigationAlternatelyScreenState extends ConsumerState<IrrigationAlternat
                             children: [
                               RichText(text: TextSpan(text: 'Tên: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: area.nameSector)])),
                               Spacer(),
-                              RichText(text: TextSpan(text: 'TDiện tích: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: area.acreage.toString())])),
+                              RichText(text: TextSpan(text: 'Diện tích: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black26), children: [TextSpan(text: area.acreage.toString())])),
                             ],
                           ), // Assuming DailyTimer has a name property
                         ),

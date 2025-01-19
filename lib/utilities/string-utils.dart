@@ -453,6 +453,20 @@ class StringUtils {
     return formattedTime;
   }
 
+
+  static String getFormattedTimeUTC(String timestampStr) {
+    num? timestamp = num.tryParse(timestampStr);
+
+    if (timestamp == null || timestamp == 0) {
+      return timestampStr;
+    }
+
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000).toUtc();
+    String formattedTime =
+        "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
+
+    return formattedTime;
+  }
   static List<T> parseListObject<T>(
       dynamic response, T Function(Map<String, dynamic>) fromJson) {
     if (response['data'] is List) {
